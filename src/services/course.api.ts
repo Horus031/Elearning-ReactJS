@@ -1,4 +1,4 @@
-import type { Course, CourseCategory, CoursePage } from "@/types/course";
+import type { Course, CourseCategories, CoursePage } from "@/types/course";
 import api from "./api";
 
 
@@ -18,9 +18,9 @@ export const getCourseListPagination = async(pageNumber: number): Promise<Course
     return response.data
 }
 
-export const getCourseCategory = async(): Promise<CourseCategory[] | undefined> => {
+export const getCourseCategory = async(): Promise<CourseCategories[] | undefined> => {
     try {
-        const response = await api.get<CourseCategory[]>("QuanLyKhoaHoc/LayDanhMucKhoaHoc")
+        const response = await api.get<CourseCategories[]>("QuanLyKhoaHoc/LayDanhMucKhoaHoc")
 
         return response.data
     } catch (error) {
@@ -45,5 +45,15 @@ export const getCourseByKeyword = async(tenKhoaHoc: string): Promise<Course[] | 
         return response.data;
     } catch (error) {
         console.log(error);
+    }
+}
+
+export const getCourseDetails = async(maKhoaHoc: string): Promise<Course | undefined> => {
+    try {
+        const response = await api.get<Course>(`QuanLyKhoaHoc/LayThongTinKhoaHoc?maKhoaHoc=${maKhoaHoc}`)
+
+        return response.data
+    } catch (error) {
+        console.log(error)
     }
 }

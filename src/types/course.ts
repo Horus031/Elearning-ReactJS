@@ -1,8 +1,13 @@
 import type { CreateCourseUser } from "./user";
 
-export type CourseCategory = {
+export type CourseCategories = {
     maDanhMuc: string;
     tenDanhMuc: string;
+}
+
+export type CourseCategory = {
+    maDanhMucKhoahoc: string;
+    tenDanhMucKhoaHoc: string;
 }
 
 
