@@ -1,5 +1,10 @@
 import type { CreateCourseUser } from "./user";
 
+export type EnrollmentDataRequest = {
+    maKhoaHoc: string | undefined;
+    taiKhoan: string | undefined;
+}
+
 export type CourseCategories = {
     maDanhMuc: string;
     tenDanhMuc: string;

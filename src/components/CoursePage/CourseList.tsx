@@ -1,8 +1,8 @@
 import { getCourseListPagination } from "@/services/course.api";
+import { renderCourseList } from "@/utils/renderCourseUtils";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
 
 const CourseList = () => {
   const [pageNumber, setPageNumber] = useState(1);
@@ -31,38 +31,6 @@ const CourseList = () => {
     }
   }
 
-  const renderListPagination = () => {
-    return courseList.map((course) => {
-      return (
-        <NavLink
-          to=""
-          key={course.maKhoaHoc}
-          className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700"
-        >
-          <div>
-            <img
-              className="rounded-t-lg w-full h-56"
-              src={course.hinhAnh}
-              alt={course.biDanh}
-            />
-          </div>
-          <div className="p-5">
-            <div>
-              <h5 className="mb-2 h-16 line-clamp-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {course.tenKhoaHoc}
-              </h5>
-            </div>
-            <p className="mb-3 h-12 font-normal text-gray-700 dark:text-gray-400 line-clamp-2">
-              {course.moTa}
-            </p>
-            <div className="inline-flex w-full items-center justify-center px-3 py-2 text-base font-medium text-center text-white bg-black rounded-lg hover:bg-black/60 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-              Xem chi tiết
-            </div>
-          </div>
-        </NavLink>
-      );
-    });
-  };
 
   return (
     <div>
@@ -78,7 +46,7 @@ const CourseList = () => {
       </div>
       <div className="container mx-auto space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {renderListPagination()}
+          {renderCourseList(courseList)}
         </div>
       </div>
     </div>

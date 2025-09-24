@@ -1,32 +1,18 @@
 import { Badge } from "@/components/ui/badge";
 import type { Course } from "@/types/course";
-import { Eye, Users } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { Clock, Eye, Users } from "lucide-react";
+import { generateCoursePrices } from "./generateCoursePrice";
 
 export const renderCourseList = (data: Course[]) => {
-  // Generate random prices for each course
-  const getRandomPrice = () =>
-    Math.floor(Math.random() * 10_000_000) + 1_000_000;
-  const getRandomDiscount = () => {
-    const percent = Math.floor(Math.random() * 41) + 10;
-    return percent;
-  };
-
-  // Generate random prices and promotion for each course
-  const coursePrices = data.reduce((acc, course) => {
-    const originalPrice = getRandomPrice();
-    const discountPercent = getRandomDiscount();
-    const promotionPrice = Math.floor(
-      originalPrice * (1 - discountPercent / 100)
-    );
-    acc[course.maKhoaHoc] = { originalPrice, promotionPrice, discountPercent };
-    return acc;
-  }, {} as Record<string, { originalPrice: number; promotionPrice: number; discountPercent: number }>);
+  const coursePrices = generateCoursePrices(data) as Record<
+    string,
+    { originalPrice: number; promotionPrice: number; discountPercent: number, duration: number, students: number, views: number }
+  >;
 
   return data.map((course) => {
     return (
-      <NavLink
-        to=""
+      <a
+        href={`/ChiTietKhoaHoc/${course.maKhoaHoc}`}
         key={course.maKhoaHoc}
         className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700"
       >
@@ -52,13 +38,16 @@ export const renderCourseList = (data: Course[]) => {
             {course.moTa}
           </p>
 
-          <div className="text-gray-500 mb-4 flex items-center justify-between">
+          <div className="text-gray-500 mb-4 flex items-center gap-4">
             <span className="flex items-center gap-2">
-              <Eye color="gray" /> {course.luotXem}
+              <Eye color="gray" /> {coursePrices[course.maKhoaHoc].views.toLocaleString("vi-VN")}
+            </span>
+            <span className="flex items-center gap-2">
+              <Clock color="gray" /> {coursePrices[course.maKhoaHoc].duration.toLocaleString("vi-VN")} giờ học
             </span>
             <span className="flex items-center gap-2">
               <Users color="gray" />
-              {course.luotXem}
+              {coursePrices[course.maKhoaHoc].students.toLocaleString("vi-VN")}
             </span>
           </div>
 
@@ -86,7 +75,7 @@ export const renderCourseList = (data: Course[]) => {
             Xem chi tiết
           </div>
         </div>
-      </NavLink>
+      </a>
     );
   });
 };

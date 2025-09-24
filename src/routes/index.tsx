@@ -10,6 +10,8 @@ const CourseCategoryPage = React.lazy(() => import("../pages/HomeTemplate/Course
 const SearchPage = React.lazy(() => import("../pages/HomeTemplate/SearchPage"));
 const CoursePage = React.lazy(() => import("../pages/HomeTemplate/CoursePage"))
 const CourseDetailPage = React.lazy(() => import("../pages/HomeTemplate/CourseDetailPage"))
+const ConfirmationPage = React.lazy(() => import("../pages/HomeTemplate/ConfirmationPage"))
+const ProfilePage = React.lazy(() => import("../pages/HomeTemplate/ProfilePage"))
 
 const withSuspense = (Component: React.LazyExoticComponent<React.FC>) => {
   return (
@@ -44,8 +46,16 @@ export const routes: RouteObject[] = [
         element: withSuspense(CoursePage)
       },
       {
-        path: "/ChiTietKhoaHoc/:CourseDetailPage",
+        path: "/ChiTietKhoaHoc/:maKhoaHoc",
         element: withSuspense(CourseDetailPage)
+      },
+      {
+        path: "/XacNhanKhoaHoc/:maKhoaHoc",
+        element: withSuspense(ConfirmationPage)
+      },
+      {
+        path: "/HoSoNguoiDung",
+        element: withSuspense(ProfilePage)
       }
     ]
   },

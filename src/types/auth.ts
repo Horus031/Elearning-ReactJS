@@ -12,6 +12,16 @@ export type RegisterDataRequest = {
     email: string;
 }
 
+export type UpdateDataRequest = {
+    taiKhoan: string;
+    matKhau: string;
+    hoTen: string;
+    soDT: string;
+    maLoaiNguoiDung: string;
+    maNhom: string;
+    email: string;
+}
+
 export type AuthFormProps = {
     mode: "login" | "register";
     onSubmit: (data: LoginDataRequest | RegisterDataRequest) => void;

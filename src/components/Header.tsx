@@ -14,7 +14,7 @@ import { useRef, useState } from "react";
 import { Input } from "./ui/input";
 import { useAuthStore } from "@/store/auth.store";
 import { Avatar, AvatarImage } from "./ui/avatar";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -32,7 +32,11 @@ export function Header() {
     return data.map((course) => {
       return (
         <DropdownMenuItem
-          onClick={() => navigate(`/DanhMucKhoaHoc?maDanhMuc=${course.maDanhMuc}&MaNhom=GP02`)}
+          onClick={() =>
+            navigate(
+              `/DanhMucKhoaHoc?maDanhMuc=${course.maDanhMuc}&MaNhom=GP02`
+            )
+          }
           key={course.maDanhMuc}
           className="bg-white w-full p-2 font-semibold cursor-pointer"
         >
@@ -48,22 +52,21 @@ export function Header() {
     if (inputRef.current) {
       const inputValue = inputRef.current.value;
       if (inputValue.trim()) {
-        navigate(`/TimKiemKhoaHoc?tenKhoaHoc=${inputValue.trim()}`)
+        navigate(`/TimKiemKhoaHoc?tenKhoaHoc=${inputValue.trim()}`);
       }
     }
   };
-  
 
   return (
     <header className="fixed top-0 z-50 w-full border-b bg-white backdrop-blur">
       <div className="flex container mx-auto h-16 items-center justify-between px-4">
         <div className="flex lg:gap-8 items-center">
-          <a href="/" className="flex flex-1 items-center space-x-2">
+          <NavLink to="/" className="flex flex-1 items-center space-x-2">
             <img src="/images/logo.png" className="h-8 w-8 text-primary" />
             <span className="text-2xl font-bold text-primary hidden lg:block">
               Cybersoft
             </span>
-          </a>
+          </NavLink>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -77,14 +80,29 @@ export function Header() {
                 className="w-52 bg-white border shadow-2xl/20 rounded-b-lg"
                 align="start"
               >
-                <DropdownMenuGroup>{renderCourseCategory()}</DropdownMenuGroup>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    onClick={() => navigate(`/DanhSachKhoaHoc`)}
+                    className="bg-white w-full p-2 font-semibold cursor-pointer"
+                  >
+                    Tất cả khóa học
+                  </DropdownMenuItem>
+                  {renderCourseCategory()}
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </nav>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex w-full max-w-sm items-center gap-2 text-lg">
-          <Input ref={inputRef} placeholder="Tìm kiếm khóa học..." className="text-lg" />
+        <form
+          onSubmit={handleSubmit}
+          className="flex w-full max-w-sm items-center gap-2 text-lg"
+        >
+          <Input
+            ref={inputRef}
+            placeholder="Tìm kiếm khóa học..."
+            className="text-lg"
+          />
           <Button type="submit" variant="outline">
             Tìm kiếm
           </Button>
@@ -105,11 +123,14 @@ export function Header() {
                   align="end"
                 >
                   <DropdownMenuGroup>
-                    <DropdownMenuItem className="bg-white w-full p-2 font-semibold cursor-pointer">
+                    <DropdownMenuItem onClick={() => navigate("/HoSoNguoiDung")} className="bg-white w-full p-2 font-semibold cursor-pointer">
                       Hồ sơ cá nhân
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={clearUser} className="bg-white w-full p-2 font-semibold cursor-pointer text-red-500">
+                    <DropdownMenuItem
+                      onClick={clearUser}
+                      className="bg-white w-full p-2 font-semibold cursor-pointer text-red-500"
+                    >
                       Log out
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
@@ -146,29 +167,39 @@ export function Header() {
       {/* Mobile Navigation */}
       {isMenuOpen && (
         <div className="md:hidden border-t bg-background">
-          <nav className="container px-4 py-4 space-y-4">
-            <a
-              href="/courses"
-              className="block text-foreground hover:text-primary transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Courses
-            </a>
-            <a
-              href="/about"
-              className="block text-foreground hover:text-primary transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              About
-            </a>
-            <a
-              href="/contact"
-              className="block text-foreground hover:text-primary transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Contact
-            </a>
-            <div className="flex flex-col space-y-2 pt-4">
+          <nav className="container shadow-2xl/50">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <span className="font-bold text-foreground hover:text-primary transition-colors cursor-pointer text-nowrap flex gap-4 p-4 border-b ">
+                  Khóa học <ChevronDownCircleIcon />
+                </span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-52 bg-white border shadow-2xl/20 rounded-b-lg"
+                align="start"
+              >
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    onClick={() => navigate(`/DanhSachKhoaHoc`)}
+                    className="bg-white w-full p-2 font-semibold cursor-pointer"
+                  >
+                    Tất cả khóa học
+                  </DropdownMenuItem>
+                  {renderCourseCategory()}
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            { user ? (
+              <div>
+                <NavLink to="/HoSoNguoiDung" className="font-bold text-foreground hover:text-primary transition-colors cursor-pointer text-nowrap flex gap-4 p-4 border-b  ">
+                  Hồ sơ người dùng
+                </NavLink>
+                <NavLink onClick={clearUser} to="/HoSoNguoiDung" className="font-bold text-red-500 hover:text-primary transition-colors cursor-pointer text-nowrap flex gap-4 p-4  ">
+                  Đăng xuất
+                </NavLink>
+              </div>
+            ) : (
+              <div className="flex flex-col space-y-2 pt-4">
               <Button variant="ghost" asChild>
                 <a href="/login">Sign In</a>
               </Button>
@@ -176,6 +207,7 @@ export function Header() {
                 <a href="/signup">Get Started</a>
               </Button>
             </div>
+            )}
           </nav>
         </div>
       )}

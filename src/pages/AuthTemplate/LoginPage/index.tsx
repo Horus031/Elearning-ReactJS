@@ -21,7 +21,6 @@ export default function LoginPage() {
       setIsLoading(false);
       if (currentUser) {
         setUser(currentUser)
-        console.log(currentUser)
 
         navigate(currentUser.maLoaiNguoiDung === "HV" ? "/" : "admin")
       }

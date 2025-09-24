@@ -14,14 +14,14 @@ const CourseSection = () => {
   const courseList = data?.items ?? [];
 
   return (
-    <section className="py-20">
-      <div className="container mx-auto space-y-4">
+    <section className="py-20 bg-card">
+      <div className="container mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <span className="font-semibold text-2xl">Các khóa học mới nhất</span>
 
-          <span className="text-lg flex items-center gap-2 text-gray-500 cursor-pointer">
+          <a href="/DanhSachKhoaHoc" className="text-lg flex items-center gap-2 text-gray-500 cursor-pointer">
             Xem thêm <MoveRight color="grey" />{" "}
-          </span>
+          </a>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {renderCourseList(courseList)}

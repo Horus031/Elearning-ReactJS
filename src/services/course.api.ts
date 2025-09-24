@@ -1,4 +1,4 @@
-import type { Course, CourseCategories, CoursePage } from "@/types/course";
+import type { Course, CourseCategories, CoursePage, EnrollmentDataRequest } from "@/types/course";
 import api from "./api";
 
 
@@ -48,9 +48,29 @@ export const getCourseByKeyword = async(tenKhoaHoc: string): Promise<Course[] | 
     }
 }
 
-export const getCourseDetails = async(maKhoaHoc: string): Promise<Course | undefined> => {
+export const getCourseDetails = async(maKhoaHoc: string | undefined): Promise<Course | undefined> => {
     try {
         const response = await api.get<Course>(`QuanLyKhoaHoc/LayThongTinKhoaHoc?maKhoaHoc=${maKhoaHoc}`)
+
+        return response.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const enrollCourse = async (data: EnrollmentDataRequest) => {
+    try {
+        const response = await api.post("QuanLyKhoaHoc/DangKyKhoaHoc", data)
+
+        return response.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const cancelEnrolledCourse = async (data: EnrollmentDataRequest) => {
+    try {
+        const response = await api.post("QuanLyKhoaHoc/HuyGhiDanh", data)
 
         return response.data
     } catch (error) {

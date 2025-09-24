@@ -3,7 +3,7 @@ import { Facebook, Youtube } from "lucide-react"
 export function Footer() {
   return (
     <footer className="bg-background border-t">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">
@@ -121,7 +121,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t mt-12 pt-8 text-center text-muted-foreground">
+        <div className="border-t mt-12 py-4 text-center text-muted-foreground">
           <p>&copy; Bản quyền CyberSoft 2017 - 2025 - Empower by CyberSoft</p>
         </div>
       </div>

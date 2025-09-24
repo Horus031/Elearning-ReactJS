@@ -36,7 +36,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-20 bg-card/30">
+    <section className="py-20 bg-card/90">
       <div className="container mx-auto px-4">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-3xl lg:text-5xl font-bold text-balance">Điểm ưu việt chỉ có tại Cybersoft</h2>
