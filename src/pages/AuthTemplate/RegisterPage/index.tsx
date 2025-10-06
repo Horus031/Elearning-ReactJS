@@ -33,8 +33,8 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <main className="flex-1 flex items-center justify-center py-12 px-4">
+    <div className="min-h-screen flex flex-col bg-amber-400">
+      <main className="flex-1 flex items-center justify-center py-12 px-4 bg-gradient-to-br from-card/50 to-background">
         <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center">
           {/* Left side - Branding */}
           <div className="hidden lg:block space-y-8">

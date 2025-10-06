@@ -118,11 +118,11 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: AuthFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Full Name</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="text"
-                  placeholder="Enter your full name"
+                  placeholder="Nhập email của bạn"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   required
