@@ -87,7 +87,7 @@ export const routes: RouteObject[] = [
         element: withSuspense(UserManagementPage),
       },
       {
-        path: "courses", // ✅ Thêm route mới ở đây
+        path: "courses",
         element: withSuspense(CourseManagementPage),
       },
     ],
