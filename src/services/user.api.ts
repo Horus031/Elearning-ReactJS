@@ -7,6 +7,7 @@ import type {
 } from "@/types/auth";
 import { https } from "@/services/api";
 import type { AxiosResponse } from "axios";
+import axios from "axios";
 
 export interface AddUserPayload {
   taiKhoan: string;
@@ -226,4 +227,11 @@ export const getEnrolledUsers = (
     maKhoaHoc,
     tuKhoa: keyword,
   });
+};
+
+export const uploadCourseImage = (formData: FormData) => {
+  return axios.post(
+    "http://elearning0706.cybersoft.edu.vn/api/QuanLyKhoaHoc/ThemKhoaHocUploadHinh",
+    formData
+  );
 };

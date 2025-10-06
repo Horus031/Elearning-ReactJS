@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { updateCourse, getCourseCategories } from "@/services/course.api";
-import { getUsers } from "@/services/user.api";
+import { getUsers, uploadCourseImage } from "@/services/user.api"; // Giả sử đã có phương thức upload trong user.api
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 
@@ -36,6 +36,7 @@ export default function EditCourseModal({
   const [danhMucList, setDanhMucList] = useState<any[]>([]);
   const [giaoVienList, setGiaoVienList] = useState<any[]>([]);
 
+  // ✅ Giữ nguyên logic cũ, chỉ đảm bảo lọc đúng người dùng có maLoaiNguoiDung = "GV"
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,9 +45,11 @@ export default function EditCourseModal({
           getUsers("GP01"),
         ]);
         setDanhMucList(dm.data);
-        setGiaoVienList(
-          users.data.filter((u: any) => u.maLoaiNguoiDung === "GV")
+        // ✅ chỉ lấy giáo viên (GV)
+        const teacherList = users.data.filter(
+          (u: any) => u.maLoaiNguoiDung === "GV"
         );
+        setGiaoVienList(teacherList);
       } catch (err) {
         console.error("Lỗi tải danh mục / giáo viên", err);
       }
@@ -57,6 +60,7 @@ export default function EditCourseModal({
 
   const handleSubmit = async () => {
     try {
+      // Tạo payload khóa học
       const payload = {
         maKhoaHoc: course.maKhoaHoc,
         tenKhoaHoc,
@@ -67,11 +71,28 @@ export default function EditCourseModal({
         maNhom,
         ngayTao: dayjs(ngayTao).format("DD/MM/YYYY"),
         maDanhMucKhoaHoc,
-        taiKhoanNguoiTao,
+        taiKhoanNguoiTao: String(taiKhoanNguoiTao), // ✅ Chọn giáo viên từ dropdown
       };
 
+      // 1. Cập nhật thông tin khóa học trước
       await updateCourse(payload);
       Swal.fire("Thành công", "Cập nhật khoá học thành công!", "success");
+
+      // 2. Nếu có file hình ảnh, upload hình ảnh
+      if (hinhAnhFile) {
+        const formData = new FormData();
+        formData.append("file", hinhAnhFile);
+        formData.append("tenKhoaHoc", tenKhoaHoc); // Gửi tên khóa học
+
+        await uploadCourseImage(formData); // Phương thức upload hình ảnh
+        Swal.fire(
+          "Thành công",
+          "Hình ảnh khoá học đã được cập nhật!",
+          "success"
+        );
+      }
+
+      // Đóng modal sau khi hoàn thành
       onClose();
     } catch (err) {
       console.error("Lỗi cập nhật:", err);
@@ -121,6 +142,8 @@ export default function EditCourseModal({
             <label className="text-sm font-medium">Đánh giá</label>
             <Input
               type="number"
+              min={1}
+              max={10}
               value={danhGia}
               onChange={(e) => setDanhGia(+e.target.value)}
             />
@@ -170,7 +193,7 @@ export default function EditCourseModal({
           </div>
 
           <div>
-            <label className="text-sm font-medium">Người tạo</label>
+            <label className="text-sm font-medium">Người tạo (Giáo viên)</label>
             <select
               value={taiKhoanNguoiTao}
               onChange={(e) => setTaiKhoanNguoiTao(e.target.value)}

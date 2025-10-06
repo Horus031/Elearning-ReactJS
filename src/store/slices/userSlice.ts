@@ -31,8 +31,12 @@ export const searchUsersThunk = createAsyncThunk(
   "users/searchUsers",
   async (keyword: string, { rejectWithValue }) => {
     try {
-      const res = await searchUsers(keyword);
-      return res;
+      const res = await searchUsers(keyword); // ✅ gọi API backend đã xử lý
+      return {
+        items: res.data,
+        totalPages: 1,
+        totalItems: res.data.length,
+      };
     } catch (err: any) {
       return rejectWithValue(err.response?.data || "Search failed");
     }
@@ -76,9 +80,11 @@ export const addUserThunk = createAsyncThunk(
   }
 );
 
+// ✅ Thêm totalItems vào UserState
 interface UserState {
   users: User[];
   totalPages: number;
+  totalItems: number; // ✅ thêm để không lỗi
   loading: boolean;
   page: number;
   error: string | null;
@@ -87,6 +93,7 @@ interface UserState {
 const initialState: UserState = {
   users: [],
   totalPages: 1,
+  totalItems: 0, // ✅ khởi tạo
   loading: false,
   page: 1,
   error: null,
@@ -122,7 +129,6 @@ const userSlice = createSlice({
     builder
       .addCase(fetchUsersPaging.pending, (state) => {
         state.loading = true;
-        // KHÔNG reset state.page ở đây
       })
 
       .addCase(updateUserThunk.pending, (state) => {
@@ -136,8 +142,11 @@ const userSlice = createSlice({
         state.totalPages = action.payload.totalPages;
         // KHÔNG gán state.page = action.payload.currentPage
       })
+      // ✅ sửa chỗ này: dùng state.users thay vì state.items
       .addCase(searchUsersThunk.fulfilled, (state, action) => {
-        state.users = action.payload;
+        state.users = action.payload.items;
+        state.totalPages = action.payload.totalPages;
+        state.totalItems = action.payload.totalItems;
       })
       .addCase(updateUserThunk.fulfilled, (state, action) => {
         const updatedUser = action.payload;

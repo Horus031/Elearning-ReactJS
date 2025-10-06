@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
-import { getUsers } from "@/services/user.api";
 import { getCourseCategories, addCourse } from "@/services/course.api";
 
 interface AddCourseModalProps {
@@ -9,6 +8,9 @@ interface AddCourseModalProps {
 }
 
 export default function AddCourseModal({ onClose }: AddCourseModalProps) {
+  const userJson = localStorage.getItem("user"); // ✅ lấy admin đang đăng nhập
+  const currentUser = userJson ? JSON.parse(userJson) : null;
+
   const [formData, setFormData] = useState({
     maKhoaHoc: "",
     tenKhoaHoc: "",
@@ -18,29 +20,22 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
     maNhom: "GP01",
     ngayTao: dayjs().format("YYYY-MM-DD"),
     maDanhMucKhoaHoc: "",
-    taiKhoanNguoiTao: "",
+    taiKhoanNguoiTao: currentUser?.taiKhoan || "", // ✅ gán mặc định admin
   });
 
   const [hinhAnhFile, setHinhAnhFile] = useState<File | null>(null);
   const [hinhAnhPreview, setHinhAnhPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [danhMucList, setDanhMucList] = useState<any[]>([]);
-  const [giaoVienList, setGiaoVienList] = useState<any[]>([]);
 
-  // ✅ Load danh mục & giáo viên
+  // ✅ Chỉ load danh mục (không load giáo viên nữa)
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [danhMucRes, userRes] = await Promise.all([
-          getCourseCategories(),
-          getUsers("GP01"),
-        ]);
+        const danhMucRes = await getCourseCategories();
         setDanhMucList(danhMucRes.data);
-        setGiaoVienList(
-          userRes.data.filter((u: any) => u.maLoaiNguoiDung === "GV")
-        );
       } catch (err) {
-        console.error("❌ Lỗi khi tải danh mục hoặc giáo viên", err);
+        console.error("❌ Lỗi khi tải danh mục", err);
       }
     };
     fetchData();
@@ -57,7 +52,7 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
     if (!formData.maDanhMucKhoaHoc)
       newErrors.maDanhMucKhoaHoc = "Vui lòng chọn danh mục khóa học";
     if (!formData.taiKhoanNguoiTao)
-      newErrors.taiKhoanNguoiTao = "Vui lòng chọn người tạo";
+      newErrors.taiKhoanNguoiTao = "Không tìm thấy người tạo";
     if (!formData.danhGia || Number(formData.danhGia) < 0)
       newErrors.danhGia = "Đánh giá không được để trống";
     if (!formData.luotXem || Number(formData.luotXem) < 0)
@@ -85,7 +80,7 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
       maNhom: formData.maNhom,
       ngayTao: dayjs(formData.ngayTao).format("DD/MM/YYYY"),
       maDanhMucKhoaHoc: formData.maDanhMucKhoaHoc,
-      taiKhoanNguoiTao: formData.taiKhoanNguoiTao,
+      taiKhoanNguoiTao: currentUser?.taiKhoan || "", // ✅ luôn gán admin
     };
 
     try {
@@ -226,22 +221,14 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
               )}
             </div>
 
-            {/* Người tạo */}
+            {/* Người tạo - hiển thị readonly */}
             <div>
-              <select
-                value={formData.taiKhoanNguoiTao}
-                onChange={(e) =>
-                  setFormData({ ...formData, taiKhoanNguoiTao: e.target.value })
-                }
-                className="border rounded p-2 w-full"
-              >
-                <option value="">Người tạo</option>
-                {giaoVienList.map((gv) => (
-                  <option key={gv.taiKhoan} value={gv.taiKhoan}>
-                    {gv.hoTen} ({gv.taiKhoan})
-                  </option>
-                ))}
-              </select>
+              <input
+                type="text"
+                value={currentUser?.taiKhoan || ""}
+                disabled
+                className="border rounded p-2 w-full bg-gray-100"
+              />
               {errors.taiKhoanNguoiTao && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.taiKhoanNguoiTao}

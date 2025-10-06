@@ -7,6 +7,7 @@ import {
 } from "@/store/slices/courseSlice";
 import type { RootState, AppDispatch } from "@/store/store";
 import type { Course } from "@/types/course";
+import { courseApi } from "@/services/course.api";
 import Pagination from "@/components/ui/Pagination";
 import EnrollCourseModal from "./EnrollCourseModal";
 import EditCourseModal from "./EditCourseModal";
@@ -15,51 +16,75 @@ import AddCourseModal from "./AddCourseModal";
 const CourseTable = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  // ✅ Đưa useState vào trong component
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [editCourse, setEditCourse] = useState<Course | null>(null);
-
-  const normalize = (str: string) =>
-    str
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase();
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [allCoursesWhenSearching, setAllCoursesWhenSearching] = useState<
+    Course[]
+  >([]);
 
   const {
     items: courses,
     page,
-    totalPages,
+
     totalItems,
   } = useSelector((state: RootState) => state.courses);
 
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const pageSize = 5;
 
+  // ✅ Gọi API khi có searchKeyword
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      dispatch(
-        fetchCoursesPagingThunk({
-          page,
-          pageSize: 5,
-          keyword: searchKeyword,
-        }) as any
-      );
+    const timeout = setTimeout(async () => {
+      if (searchKeyword.trim()) {
+        try {
+          const res = await courseApi.getAllCourses(); // gọi LayDanhSachKhoaHoc
+          setAllCoursesWhenSearching(res.data);
+          dispatch(setPage(1)); // reset về trang 1
+        } catch (err) {
+          console.error("Lỗi khi gọi API getCourses", err);
+        }
+      } else {
+        dispatch(
+          fetchCoursesPagingThunk({ page, pageSize, keyword: "" }) as any
+        );
+      }
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [page, searchKeyword, dispatch]);
+  }, [searchKeyword]);
+
+  // ✅ Gọi lại khi đổi page (nếu không đang search)
+  useEffect(() => {
+    if (!searchKeyword.trim()) {
+      dispatch(fetchCoursesPagingThunk({ page, pageSize, keyword: "" }) as any);
+    }
+  }, [page]);
+
   const handleDelete = (maKhoaHoc: string) => {
     if (confirm("Bạn có chắc muốn xóa khoá học này?")) {
       dispatch(deleteCourseThunk(maKhoaHoc));
     }
   };
 
-  const filteredCourses = courses.filter((course) =>
-    normalize(course.tenKhoaHoc || "").includes(normalize(searchKeyword))
+  // ✅ Tính danh sách hiện tại khi đang search
+  const normalizedKeyword = searchKeyword.toLowerCase();
+  const filteredCourses = allCoursesWhenSearching.filter((course) =>
+    course.tenKhoaHoc.toLowerCase().includes(normalizedKeyword)
   );
+  const totalFilteredItems = filteredCourses.length;
+  const paginatedCourses = filteredCourses.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
+
+  const displayCourses = searchKeyword.trim() ? paginatedCourses : courses;
+  const displayTotalItems = searchKeyword.trim()
+    ? totalFilteredItems
+    : totalItems;
+
   return (
     <div className="p-4 bg-white rounded-lg shadow">
-      {/* Header: Thêm khóa học + tìm kiếm */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-3">
         <button
           onClick={() => setIsAddModalOpen(true)}
@@ -70,14 +95,13 @@ const CourseTable = () => {
 
         <input
           type="text"
-          placeholder="Nhập tên hoặc mã khóa học"
+          placeholder="Nhập tên khóa học"
           className="absolute left-1/2 transform -translate-x-1/2 border border-gray-300 px-4 py-2 rounded-md w-[800px]"
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
         />
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full border border-collapse text-sm md:text-base">
           <thead>
@@ -94,10 +118,12 @@ const CourseTable = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredCourses.length > 0 ? (
-              filteredCourses.map((course: Course, index: number) => (
+            {displayCourses.length > 0 ? (
+              displayCourses.map((course: Course, index: number) => (
                 <tr key={course.maKhoaHoc}>
-                  <td className="border p-2 text-center">{index + 1}</td>
+                  <td className="border p-2 text-center">
+                    {(page - 1) * pageSize + index + 1}
+                  </td>
                   <td className="border p-2 text-center">{course.maKhoaHoc}</td>
                   <td className="border p-2">{course.tenKhoaHoc}</td>
                   <td className="border p-2 text-center">
@@ -157,6 +183,7 @@ const CourseTable = () => {
           </tbody>
         </table>
       </div>
+
       {isAddModalOpen && (
         <AddCourseModal onClose={() => setIsAddModalOpen(false)} />
       )}
@@ -172,11 +199,12 @@ const CourseTable = () => {
           onClose={() => setEditCourse(null)}
         />
       )}
+
       <Pagination
         page={page}
-        totalPages={totalPages}
-        pageSize={5}
-        totalItems={totalItems}
+        totalPages={Math.ceil(displayTotalItems / pageSize)}
+        pageSize={pageSize}
+        totalItems={displayTotalItems}
         onPageChange={(newPage) => dispatch(setPage(newPage))}
       />
     </div>
