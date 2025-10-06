@@ -15,6 +15,7 @@ import { Input } from "./ui/input";
 import { useAuthStore } from "@/store/auth.store";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { NavLink, useNavigate } from "react-router-dom";
+import { FaCog } from "react-icons/fa";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -123,7 +124,10 @@ export function Header() {
                   align="end"
                 >
                   <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => navigate("/HoSoNguoiDung")} className="bg-white w-full p-2 font-semibold cursor-pointer">
+                    <DropdownMenuItem
+                      onClick={() => navigate("/HoSoNguoiDung")}
+                      className="bg-white w-full p-2 font-semibold cursor-pointer"
+                    >
                       Hồ sơ cá nhân
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -136,6 +140,13 @@ export function Header() {
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* ✅ ICON QUẢN TRỊ CHO GIÁO VIÊN */}
+              {user?.maLoaiNguoiDung === "GV" && (
+                <NavLink to="/admin/users" title="Quản trị admin">
+                  <FaCog className="text-black text-xl hover:text-gray-600 cursor-pointer" />
+                </NavLink>
+              )}
             </>
           ) : (
             <>
@@ -189,24 +200,31 @@ export function Header() {
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
-            { user ? (
+            {user ? (
               <div>
-                <NavLink to="/HoSoNguoiDung" className="font-bold text-foreground hover:text-primary transition-colors cursor-pointer text-nowrap flex gap-4 p-4 border-b  ">
+                <NavLink
+                  to="/HoSoNguoiDung"
+                  className="font-bold text-foreground hover:text-primary transition-colors cursor-pointer text-nowrap flex gap-4 p-4 border-b  "
+                >
                   Hồ sơ người dùng
                 </NavLink>
-                <NavLink onClick={clearUser} to="/HoSoNguoiDung" className="font-bold text-red-500 hover:text-primary transition-colors cursor-pointer text-nowrap flex gap-4 p-4  ">
+                <NavLink
+                  onClick={clearUser}
+                  to="/HoSoNguoiDung"
+                  className="font-bold text-red-500 hover:text-primary transition-colors cursor-pointer text-nowrap flex gap-4 p-4  "
+                >
                   Đăng xuất
                 </NavLink>
               </div>
             ) : (
               <div className="flex flex-col space-y-2 pt-4">
-              <Button variant="ghost" asChild>
-                <a href="/login">Sign In</a>
-              </Button>
-              <Button asChild>
-                <a href="/signup">Get Started</a>
-              </Button>
-            </div>
+                <Button variant="ghost" asChild>
+                  <a href="/login">Sign In</a>
+                </Button>
+                <Button asChild>
+                  <a href="/signup">Get Started</a>
+                </Button>
+              </div>
             )}
           </nav>
         </div>

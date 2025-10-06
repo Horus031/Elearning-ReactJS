@@ -21,4 +21,5 @@ api.interceptors.request.use((config: any) => {
   };
 });
 
+export const https = api;
 export default api;

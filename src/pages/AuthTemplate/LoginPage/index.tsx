@@ -22,7 +22,7 @@ export default function LoginPage() {
       if (currentUser) {
         setUser(currentUser)
 
-        navigate(currentUser.maLoaiNguoiDung === "HV" ? "/" : "admin")
+        navigate(currentUser.maLoaiNguoiDung === "GV" ? "/admin/users" : "/TrangChu")
       }
     },
     onError: () => {
