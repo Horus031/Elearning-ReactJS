@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 import { getCourseCategories, addCourse } from "@/services/course.api";
+import { uploadCourseImage } from "@/services/course.api";
 
 interface AddCourseModalProps {
   onClose: () => void;
@@ -85,11 +86,36 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
 
     try {
       await addCourse(newCourse);
-      Swal.fire("Thành công", "Thêm khóa học thành công!", "success");
-      onClose();
-    } catch (err) {
+
+      if (hinhAnhFile) {
+        const formDataUpload = new FormData();
+        formDataUpload.append("file", hinhAnhFile);
+        formDataUpload.append("tenKhoaHoc", newCourse.tenKhoaHoc.trim());
+        await uploadCourseImage(formDataUpload);
+      }
+
+      await Swal.fire(
+        "Thành công",
+        "Thêm khoá học & upload hình ảnh thành công!",
+        "success"
+      );
+      onClose(); // ✅ modal tự đóng sau khi Swal
+    } catch (err: any) {
       console.error("❌ Lỗi thêm khóa học:", err);
-      setErrors({ api: "Không thể thêm khóa học. Vui lòng thử lại." });
+
+      if (err?.response?.data) {
+        const message = err.response.data;
+        if (typeof message === "string" && message.includes("đã tồn tại")) {
+          await Swal.fire("Lỗi", "Mã khoá học đã tồn tại!", "error");
+          return;
+        }
+      }
+
+      await Swal.fire(
+        "Lỗi",
+        "Không thể thêm khoá học. Vui lòng thử lại.",
+        "error"
+      );
     }
   };
 

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { updateCourse, getCourseCategories } from "@/services/course.api";
-import { getUsers, uploadCourseImage } from "@/services/user.api"; // Giả sử đã có phương thức upload trong user.api
+import { getUsers } from "@/services/user.api";
+import { uploadCourseImage } from "@/services/course.api";
+
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 
@@ -82,7 +84,7 @@ export default function EditCourseModal({
       if (hinhAnhFile) {
         const formData = new FormData();
         formData.append("file", hinhAnhFile);
-        formData.append("tenKhoaHoc", tenKhoaHoc); // Gửi tên khóa học
+        formData.append("tenKhoaHoc", tenKhoaHoc);
 
         await uploadCourseImage(formData); // Phương thức upload hình ảnh
         Swal.fire(

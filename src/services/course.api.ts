@@ -194,3 +194,11 @@ export const getCourseCategories = () => {
 export const addCourse = (data: any) => {
   return api.post("/QuanLyKhoaHoc/ThemKhoaHoc", data);
 };
+
+export const uploadCourseImage = (formData: FormData) => {
+  return api.post("/QuanLyKhoaHoc/UploadHinhAnhKhoaHoc", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
